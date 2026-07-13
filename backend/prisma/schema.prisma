@@ -1,0 +1,53 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+enum ActivityAction {
+  CREATE
+  UPDATE
+  DELETE
+}
+
+model Student {
+  id              Int      @id @default(autoincrement())
+  admissionNumber String   @unique @map("admission_number")
+  name            String
+  course          String
+  year            Int
+  dob             DateTime @db.Date
+  email           String
+  mobile          String
+  gender          Gender
+  address         String
+  photoUrl        String?  @map("photo_url")
+  photoPublicId   String?  @map("photo_public_id")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@index([name])
+  @@index([admissionNumber])
+  @@map("students")
+}
+
+model ActivityLog {
+  id         Int            @id @default(autoincrement())
+  entityType String         @map("entity_type")
+  entityId   Int?           @map("entity_id")
+  action     ActivityAction
+  details    Json?
+  createdAt  DateTime       @default(now()) @map("created_at")
+
+  @@index([entityType, entityId])
+  @@map("activity_logs")
+}
