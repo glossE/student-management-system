@@ -1,0 +1,21 @@
+node_modules/
+dist/
+backend/public/
+
+# Environment secrets — commit .env.example only
+.env
+.env.local
+*.env
+!.env.example
+
+# Prisma generated client
+backend/node_modules/.prisma/
+
+# Logs & OS/editor cruft
+*.log
+npm-debug.log*
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+.angular/

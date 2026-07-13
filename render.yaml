@@ -1,0 +1,22 @@
+databases:
+  - name: student-management-db
+    databaseName: student_management
+    plan: free
+
+services:
+  - type: web
+    name: student-management
+    runtime: node
+    plan: free
+    buildCommand: npm run build
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: student-management-db
+          property: connectionString
+      - key: CLOUDINARY_URL
+        sync: false
+      - key: NODE_VERSION
+        value: "22"
