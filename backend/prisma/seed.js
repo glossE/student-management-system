@@ -1,3 +1,4 @@
+import "dotenv/config";
 import { PrismaClient } from "@prisma/client";
 import { nextAdmissionNumber } from "../src/services/admissionNumber.js";
 
