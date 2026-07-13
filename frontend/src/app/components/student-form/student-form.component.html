@@ -1,0 +1,142 @@
+<p-dialog
+  [header]="isEdit ? 'Edit Student' : 'Add Student'"
+  [visible]="visible"
+  (visibleChange)="visible = $event; visibleChange.emit($event)"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [style]="{ width: '46rem' }"
+  [breakpoints]="{ '960px': '90vw' }"
+  [dismissableMask]="true"
+>
+  <form [formGroup]="form" (ngSubmit)="submit()" class="student-form">
+    <div class="form-grid">
+      <div class="field">
+        <label for="name">Full Name <span class="req">*</span></label>
+        <input pInputText id="name" formControlName="name" placeholder="e.g. Aarav Sharma" autocomplete="off" />
+        @if (error('name'); as msg) { <small class="field-error">{{ msg }}</small> }
+      </div>
+
+      <div class="field">
+        <label for="email">Email <span class="req">*</span></label>
+        <input pInputText id="email" type="email" formControlName="email" placeholder="student@example.com" autocomplete="off" />
+        @if (error('email'); as msg) { <small class="field-error">{{ msg }}</small> }
+      </div>
+
+      <div class="field">
+        <label for="course">Course <span class="req">*</span></label>
+        <p-select
+          inputId="course"
+          formControlName="course"
+          [options]="courseOptions"
+          optionLabel="label"
+          optionValue="value"
+          placeholder="Select course"
+          [filter]="true"
+          appendTo="body"
+          styleClass="w-full"
+        />
+        @if (error('course'); as msg) { <small class="field-error">{{ msg }}</small> }
+      </div>
+
+      <div class="field">
+        <label for="year">Year <span class="req">*</span></label>
+        <p-select
+          inputId="year"
+          formControlName="year"
+          [options]="yearOptions"
+          optionLabel="label"
+          optionValue="value"
+          placeholder="Select year"
+          appendTo="body"
+          styleClass="w-full"
+        />
+        @if (error('year'); as msg) { <small class="field-error">{{ msg }}</small> }
+      </div>
+
+      <div class="field">
+        <label for="dob">Date of Birth <span class="req">*</span></label>
+        <p-datepicker
+          inputId="dob"
+          formControlName="dob"
+          dateFormat="dd/mm/yy"
+          [maxDate]="today"
+          [showIcon]="true"
+          [readonlyInput]="true"
+          appendTo="body"
+          styleClass="w-full"
+        />
+        @if (error('dob'); as msg) { <small class="field-error">{{ msg }}</small> }
+      </div>
+
+      <div class="field">
+        <label for="gender">Gender <span class="req">*</span></label>
+        <p-select
+          inputId="gender"
+          formControlName="gender"
+          [options]="genderOptions"
+          optionLabel="label"
+          optionValue="value"
+          placeholder="Select gender"
+          appendTo="body"
+          styleClass="w-full"
+        />
+        @if (error('gender'); as msg) { <small class="field-error">{{ msg }}</small> }
+      </div>
+
+      <div class="field">
+        <label for="mobile">Mobile <span class="req">*</span></label>
+        <input pInputText id="mobile" formControlName="mobile" placeholder="10-digit number" inputmode="numeric" maxlength="10" autocomplete="off" />
+        @if (error('mobile'); as msg) { <small class="field-error">{{ msg }}</small> }
+      </div>
+
+      <div class="field field--full">
+        <label for="address">Address <span class="req">*</span></label>
+        <textarea pTextarea id="address" formControlName="address" rows="2" placeholder="Residential address"></textarea>
+        @if (error('address'); as msg) { <small class="field-error">{{ msg }}</small> }
+      </div>
+
+      <div class="field field--full photo-field">
+        <label>Photo</label>
+        <div class="photo-row">
+          <p-avatar
+            [image]="photoPreview || undefined"
+            [label]="photoPreview ? undefined : 'PU'"
+            size="xlarge"
+            shape="circle"
+          />
+          <div class="photo-actions">
+            @if (photoUploadEnabled) {
+              <p-fileupload
+                mode="basic"
+                chooseLabel="Choose photo"
+                chooseIcon="pi pi-upload"
+                accept="image/*"
+                [maxFileSize]="5000000"
+                [auto]="false"
+                [customUpload]="true"
+                (onSelect)="onPhotoSelect($event)"
+              />
+              @if (photoFile) {
+                <p-button type="button" label="Remove" severity="secondary" [text]="true" icon="pi pi-times" (onClick)="removePhoto()" />
+              }
+              <small class="hint">JPG, PNG, WEBP or GIF — max 5 MB. Optional.</small>
+            } @else {
+              <small class="hint">Photo upload is disabled (Cloudinary not configured).</small>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+
+  <ng-template pTemplate="footer">
+    <p-button label="Cancel" severity="secondary" [text]="true" (onClick)="close()" [disabled]="submitting" />
+    <p-button
+      [label]="isEdit ? 'Update' : 'Save'"
+      icon="pi pi-check"
+      (onClick)="submit()"
+      [loading]="submitting"
+    />
+  </ng-template>
+</p-dialog>

@@ -1,0 +1,56 @@
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.1rem 1.25rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+
+  label {
+    font-weight: 600;
+    font-size: 0.875rem;
+  }
+
+  .req {
+    color: var(--p-red-500, #ef4444);
+  }
+}
+
+.field--full {
+  grid-column: 1 / -1;
+}
+
+input,
+textarea,
+:host ::ng-deep .p-select,
+:host ::ng-deep .p-datepicker,
+:host ::ng-deep .p-inputtext {
+  width: 100%;
+}
+
+.photo-row {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.photo-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.hint {
+  color: var(--p-text-muted-color, #6b7280);
+  font-size: 0.8125rem;
+}
+
+@media (max-width: 640px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+}
