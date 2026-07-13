@@ -8,11 +8,15 @@
     "node": ">=20"
   },
   "scripts": {
-    "install:all": "npm --prefix backend install && npm --prefix frontend install",
-    "build": "npm run install:all && npm --prefix frontend run build && node scripts/copy-dist.js && npm --prefix backend run prisma:generate",
-    "start": "npm --prefix backend run start:prod",
-    "dev:backend": "npm --prefix backend run dev",
-    "dev:frontend": "npm --prefix frontend start",
-    "seed": "npm --prefix backend run seed"
+    "install:all": "npm run install:backend && npm run install:frontend",
+    "install:backend": "cd backend && npm install",
+    "install:frontend": "cd frontend && npm install",
+    "build": "npm run install:all && npm run build:frontend && node scripts/copy-dist.js && npm run generate:prisma",
+    "build:frontend": "cd frontend && npm run build",
+    "generate:prisma": "cd backend && npm run prisma:generate",
+    "start": "cd backend && npm run start:prod",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm start",
+    "seed": "cd backend && npm run seed"
   }
 }
