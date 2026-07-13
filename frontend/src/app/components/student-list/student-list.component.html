@@ -1,0 +1,137 @@
+<section class="toolbar">
+  <div class="toolbar__search">
+    <p-iconfield iconPosition="left">
+      <p-inputicon styleClass="pi pi-search" />
+      <input
+        pInputText
+        type="text"
+        [ngModel]="search"
+        (ngModelChange)="onSearchInput($event)"
+        placeholder="Search name, email or admission no."
+        class="search-input"
+      />
+    </p-iconfield>
+  </div>
+
+  <div class="toolbar__filters">
+    <p-select
+      [(ngModel)]="filterCourse"
+      (ngModelChange)="applyFilters()"
+      [options]="courseOptions"
+      optionLabel="label"
+      optionValue="value"
+      placeholder="Course"
+      [showClear]="true"
+      styleClass="filter-select"
+    />
+    <p-select
+      [(ngModel)]="filterYear"
+      (ngModelChange)="applyFilters()"
+      [options]="yearOptions"
+      optionLabel="label"
+      optionValue="value"
+      placeholder="Year"
+      [showClear]="true"
+      styleClass="filter-select filter-select--sm"
+    />
+    <p-select
+      [(ngModel)]="filterGender"
+      (ngModelChange)="applyFilters()"
+      [options]="genderOptions"
+      optionLabel="label"
+      optionValue="value"
+      placeholder="Gender"
+      [showClear]="true"
+      styleClass="filter-select filter-select--sm"
+    />
+    <p-button
+      icon="pi pi-filter-slash"
+      severity="secondary"
+      [text]="true"
+      pTooltip="Clear filters"
+      tooltipPosition="top"
+      (onClick)="clearFilters()"
+    />
+  </div>
+
+  <p-button label="Add Student" icon="pi pi-plus" (onClick)="openCreate()" styleClass="add-btn" />
+</section>
+
+<p-table
+  [value]="students"
+  [lazy]="true"
+  (onLazyLoad)="onLazyLoad($event)"
+  [paginator]="true"
+  [rows]="rows"
+  [first]="first"
+  [totalRecords]="total"
+  [loading]="loading"
+  [rowsPerPageOptions]="[5, 10, 20, 50]"
+  [showCurrentPageReport]="true"
+  currentPageReportTemplate="Showing {first}–{last} of {totalRecords} students"
+  sortField="createdAt"
+  [sortOrder]="-1"
+  dataKey="id"
+  scrollable="true"
+  styleClass="p-datatable-sm students-table"
+>
+  <ng-template pTemplate="header">
+    <tr>
+      <th style="width: 4rem">Photo</th>
+      <th pSortableColumn="admissionNumber">Admission No. <p-sortIcon field="admissionNumber" /></th>
+      <th pSortableColumn="name">Name <p-sortIcon field="name" /></th>
+      <th pSortableColumn="course">Course <p-sortIcon field="course" /></th>
+      <th pSortableColumn="year" style="width: 6rem">Year <p-sortIcon field="year" /></th>
+      <th>Email</th>
+      <th>Mobile</th>
+      <th style="width: 7rem">Gender</th>
+      <th style="width: 8rem" class="col-actions">Actions</th>
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="body" let-student>
+    <tr>
+      <td>
+        <p-avatar
+          [image]="student.photoUrl || undefined"
+          [label]="student.photoUrl ? undefined : initials(student.name)"
+          shape="circle"
+        />
+      </td>
+      <td><span class="admission">{{ student.admissionNumber }}</span></td>
+      <td>{{ student.name }}</td>
+      <td>{{ student.course }}</td>
+      <td>{{ student.year }}</td>
+      <td class="email-cell">{{ student.email }}</td>
+      <td>{{ student.mobile }}</td>
+      <td><p-tag [value]="genderLabel(student.gender)" [severity]="genderSeverity(student.gender)" /></td>
+      <td class="col-actions">
+        <p-button icon="pi pi-pencil" severity="secondary" [text]="true" [rounded]="true" pTooltip="Edit" tooltipPosition="top" (onClick)="openEdit(student)" />
+        <p-button icon="pi pi-trash" severity="danger" [text]="true" [rounded]="true" pTooltip="Delete" tooltipPosition="top" (onClick)="confirmDelete(student)" />
+      </td>
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td colspan="9">
+        <div class="empty-state">
+          <i class="pi pi-users"></i>
+          <p>No students found.</p>
+          @if (search || filterCourse || filterYear || filterGender) {
+            <p-button label="Clear filters" [text]="true" (onClick)="clearFilters()" />
+          }
+        </div>
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
+
+<app-student-form
+  [(visible)]="dialogVisible"
+  [student]="selected"
+  [meta]="meta"
+  (saved)="onSaved($event)"
+/>
+
+<p-confirmDialog />
