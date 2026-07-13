@@ -11,6 +11,9 @@ backend/public/
 # Prisma generated client
 backend/node_modules/.prisma/
 
+# Personal study material — never commit
+*.pdf
+
 # Logs & OS/editor cruft
 *.log
 npm-debug.log*
