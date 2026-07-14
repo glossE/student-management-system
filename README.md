@@ -4,7 +4,7 @@ A full-stack Student Management System built as a single deployable web service.
 The Express backend serves both the REST API (`/api/*`) and the compiled Angular
 single-page app, so there is one service to deploy and no CORS to configure.
 
-**Live URL:** _<add your Render URL here after deploying>_
+**Live URL:** <https://student-management-mrwv.onrender.com>
 
 > ⏱️ The live app is hosted on Render's free tier. The first request after a
 > period of inactivity can take **~1 minute** while the service cold-starts.
