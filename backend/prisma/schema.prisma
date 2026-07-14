@@ -19,6 +19,17 @@ enum ActivityAction {
   DELETE
 }
 
+enum Role {
+  PRINCIPAL
+  ADMIN
+}
+
+enum AuthEvent {
+  LOGIN
+  LOGOUT
+  LOGIN_FAILED
+}
+
 model Student {
   id              Int      @id @default(autoincrement())
   admissionNumber String   @unique @map("admission_number")
@@ -40,14 +51,47 @@ model Student {
   @@map("students")
 }
 
+model User {
+  id           Int       @id @default(autoincrement())
+  name         String
+  email        String    @unique
+  passwordHash String    @map("password_hash")
+  role         Role
+  isActive     Boolean   @default(true) @map("is_active")
+  lastLoginAt  DateTime? @map("last_login_at")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+
+  @@index([email])
+  @@map("users")
+}
+
 model ActivityLog {
   id         Int            @id @default(autoincrement())
   entityType String         @map("entity_type")
   entityId   Int?           @map("entity_id")
   action     ActivityAction
   details    Json?
+  userId     Int?           @map("user_id")
+  actorEmail String?        @map("actor_email")
+  actorRole  Role?          @map("actor_role")
   createdAt  DateTime       @default(now()) @map("created_at")
 
   @@index([entityType, entityId])
+  @@index([userId])
   @@map("activity_logs")
+}
+
+model AuthLog {
+  id        Int       @id @default(autoincrement())
+  userId    Int?      @map("user_id")
+  email     String
+  event     AuthEvent
+  ipAddress String?   @map("ip_address")
+  userAgent String?   @map("user_agent")
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  @@index([userId])
+  @@index([event])
+  @@map("auth_logs")
 }

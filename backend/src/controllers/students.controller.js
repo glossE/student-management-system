@@ -97,6 +97,7 @@ export async function createStudent(req, res) {
         action: "CREATE",
         entityId: created.id,
         details: { admissionNumber: created.admissionNumber, name: created.name },
+        actor: req.user,
       });
       return created;
     });
@@ -138,6 +139,7 @@ export async function updateStudent(req, res) {
         action: "UPDATE",
         entityId: id,
         details: { fields: Object.keys(parsed.data) },
+        actor: req.user,
       });
       return updated;
     });
@@ -164,6 +166,7 @@ export async function deleteStudent(req, res) {
       action: "DELETE",
       entityId: id,
       details: { admissionNumber: existing.admissionNumber, name: existing.name },
+      actor: req.user,
     });
   });
 
