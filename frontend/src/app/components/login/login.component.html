@@ -1,0 +1,35 @@
+<div class="login-wrap">
+  <form class="login-card" [formGroup]="form" (ngSubmit)="submit()">
+    <div class="login-brand">
+      <i class="pi pi-graduation-cap"></i>
+      <h1>Student Management</h1>
+      <span>Pillai University · Staff sign in</span>
+    </div>
+
+    @if (errorMsg()) {
+      <p-message severity="error" [text]="errorMsg()!" styleClass="login-error" />
+    }
+
+    <div class="field">
+      <label for="email">Email</label>
+      <input pInputText id="email" type="email" formControlName="email" placeholder="you@pillai.edu" autocomplete="username" />
+      @if (invalid('email')) { <small class="err">Enter a valid email address</small> }
+    </div>
+
+    <div class="field">
+      <label for="password">Password</label>
+      <p-password
+        inputId="password"
+        formControlName="password"
+        [feedback]="false"
+        [toggleMask]="true"
+        placeholder="Your password"
+        [inputStyle]="{ width: '100%' }"
+        styleClass="login-password"
+      />
+      @if (invalid('password')) { <small class="err">Password is required</small> }
+    </div>
+
+    <p-button type="submit" label="Sign in" icon="pi pi-sign-in" [loading]="submitting()" styleClass="login-submit" />
+  </form>
+</div>
