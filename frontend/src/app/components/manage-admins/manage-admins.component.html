@@ -1,0 +1,87 @@
+<section class="page-head">
+  <div class="page-head__text">
+    <h2>Manage staff</h2>
+    <p>Create and deactivate principal / admin accounts.</p>
+  </div>
+  <p-button label="Add staff" icon="pi pi-user-plus" (onClick)="openCreate()" />
+</section>
+
+<p-table [value]="users()" [loading]="loading()" dataKey="id" styleClass="p-datatable-sm staff-table">
+  <ng-template pTemplate="header">
+    <tr>
+      <th>Name</th>
+      <th>Email</th>
+      <th style="width: 8rem">Role</th>
+      <th style="width: 8rem">Status</th>
+      <th>Last login</th>
+      <th style="width: 9rem" class="col-actions">Actions</th>
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="body" let-u>
+    <tr>
+      <td>{{ u.name }} @if (isSelf(u)) { <span class="you">(you)</span> }</td>
+      <td class="muted">{{ u.email }}</td>
+      <td><p-tag [value]="u.role" [severity]="u.role === 'PRINCIPAL' ? 'warn' : 'info'" /></td>
+      <td><p-tag [value]="u.isActive ? 'Active' : 'Inactive'" [severity]="u.isActive ? 'success' : 'danger'" /></td>
+      <td class="muted">{{ u.lastLoginAt ? (u.lastLoginAt | date: 'medium') : '—' }}</td>
+      <td class="col-actions">
+        @if (isSelf(u)) {
+          <span class="muted">—</span>
+        } @else {
+          <p-button
+            [label]="u.isActive ? 'Deactivate' : 'Activate'"
+            [severity]="u.isActive ? 'danger' : 'success'"
+            [text]="true"
+            size="small"
+            (onClick)="toggleActive(u)"
+          />
+        }
+      </td>
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="emptymessage">
+    <tr><td colspan="6" class="empty">No staff accounts yet.</td></tr>
+  </ng-template>
+</p-table>
+
+<p-dialog
+  header="Add staff account"
+  [(visible)]="dialogVisible"
+  [modal]="true"
+  [draggable]="false"
+  [style]="{ width: '32rem' }"
+  [breakpoints]="{ '640px': '92vw' }"
+  [dismissableMask]="true"
+>
+  <form [formGroup]="form" (ngSubmit)="submit()" class="staff-form">
+    <div class="field">
+      <label for="s-name">Full name</label>
+      <input pInputText id="s-name" formControlName="name" autocomplete="off" />
+      @if (error('name'); as m) { <small class="err">{{ m }}</small> }
+    </div>
+    <div class="field">
+      <label for="s-email">Email</label>
+      <input pInputText id="s-email" type="email" formControlName="email" autocomplete="off" />
+      @if (error('email'); as m) { <small class="err">{{ m }}</small> }
+    </div>
+    <div class="field">
+      <label for="s-password">Temporary password</label>
+      <p-password inputId="s-password" formControlName="password" [feedback]="false" [toggleMask]="true" [inputStyle]="{ width: '100%' }" styleClass="full-password" />
+      @if (error('password'); as m) { <small class="err">{{ m }}</small> }
+    </div>
+    <div class="field">
+      <label for="s-role">Role</label>
+      <p-select inputId="s-role" formControlName="role" [options]="roleOptions" optionLabel="label" optionValue="value" appendTo="body" styleClass="full-select" />
+      @if (error('role'); as m) { <small class="err">{{ m }}</small> }
+    </div>
+  </form>
+
+  <ng-template pTemplate="footer">
+    <p-button label="Cancel" severity="secondary" [text]="true" (onClick)="dialogVisible = false" [disabled]="submitting()" />
+    <p-button label="Create" icon="pi pi-check" (onClick)="submit()" [loading]="submitting()" />
+  </ng-template>
+</p-dialog>
+
+<p-confirmDialog />

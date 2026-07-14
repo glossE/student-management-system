@@ -1,14 +1,13 @@
 import { Component, inject } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
-import { StudentListComponent } from '../student-list/student-list.component';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [StudentListComponent, ButtonModule, TagModule],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, ButtonModule, TagModule],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
 })

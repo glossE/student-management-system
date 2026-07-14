@@ -42,6 +42,33 @@
   }
 }
 
+.app-nav {
+  display: flex;
+  gap: 0.35rem;
+  margin-right: auto;
+  margin-left: 1.5rem;
+
+  a {
+    color: var(--p-primary-contrast-color, #ffffff);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    padding: 0.4rem 0.7rem;
+    border-radius: 6px;
+    opacity: 0.85;
+
+    &:hover {
+      opacity: 1;
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    &.active {
+      opacity: 1;
+      background: rgba(255, 255, 255, 0.2);
+    }
+  }
+}
+
 .user-box {
   display: flex;
   align-items: center;

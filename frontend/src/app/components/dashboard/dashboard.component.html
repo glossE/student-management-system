@@ -8,6 +8,13 @@
       </div>
     </div>
 
+    <nav class="app-nav">
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Students</a>
+      @if (auth.isPrincipal()) {
+        <a routerLink="/users" routerLinkActive="active">Manage Admins</a>
+      }
+    </nav>
+
     @if (auth.user(); as user) {
       <div class="user-box">
         <div class="user-meta">
@@ -21,7 +28,7 @@
 </header>
 
 <main class="app-main">
-  <app-student-list />
+  <router-outlet />
 </main>
 
 <footer class="app-footer">
