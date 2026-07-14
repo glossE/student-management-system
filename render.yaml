@@ -18,5 +18,16 @@ services:
           property: connectionString
       - key: CLOUDINARY_URL
         sync: false
+      # Signs JWT login tokens. Render generates a strong random value on first deploy.
+      - key: JWT_SECRET
+        generateValue: true
+      # The first principal account, seeded on startup. Set these in the dashboard.
+      - key: PRINCIPAL_EMAIL
+        sync: false
+      - key: PRINCIPAL_PASSWORD
+        sync: false
+      # Marks auth cookies Secure (HTTPS-only) in production.
+      - key: NODE_ENV
+        value: production
       - key: NODE_VERSION
         value: "22"

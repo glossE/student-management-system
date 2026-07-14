@@ -20,6 +20,7 @@ single-page app, so there is one service to deploy and no CORS to configure.
 | Backend    | Node.js + Express                                                      |
 | Database   | PostgreSQL via Prisma ORM                                              |
 | Validation | Zod (server) + Angular validators (client)                            |
+| Auth       | JWT in an httpOnly cookie, bcrypt hashing, PRINCIPAL / ADMIN roles     |
 | Photos     | Cloudinary (streamed uploads, no local disk storage)                  |
 | Hosting    | Render — single web service + managed Postgres                        |
 
@@ -37,8 +38,13 @@ single-page app, so there is one service to deploy and no CORS to configure.
 - **Search** by name / email / admission number; **filter** by course, year and gender.
 - **Two-sided validation** — Angular Reactive Form validators plus Zod on Express,
   with field-level error messages surfaced in the form.
+- **Authentication & role-based access** — staff sign in (JWT in an httpOnly
+  cookie, bcrypt-hashed passwords). **PRINCIPAL** manages admin accounts and views
+  logs; **ADMIN** handles student CRUD. Protected routes return `401` when not
+  logged in and `403` for the wrong role.
 - **Activity logging** — every create / update / delete is recorded in an
-  `activity_logs` table.
+  `activity_logs` table, stamped with the acting user; login / logout /
+  failed-login events are recorded in an `auth_logs` table.
 - **Indexes** on `name` and `admission_number`.
 - **Responsive UI** using a PrimeNG Aura theme preset, `p-dialog`, `p-fileUpload`,
   `p-select`, `p-datepicker`, `p-confirmDialog`, `p-toast` and `p-avatar`.
@@ -129,6 +135,9 @@ npm run seed                # optional: insert 5 sample students
 cd ..
 ```
 
+Set `PRINCIPAL_EMAIL` and `PRINCIPAL_PASSWORD` in `backend/.env`; the first
+`npm start` seeds that initial principal so you can log in.
+
 ### 4. Run in development
 
 Run the API and the Angular dev server in two terminals:
@@ -158,9 +167,13 @@ Commit `.env.example`, never the real `.env`.
 
 | Variable         | Required | Description                                                        |
 | ---------------- | -------- | ------------------------------------------------------------------ |
-| `DATABASE_URL`   | yes      | PostgreSQL connection string. On Render use the **internal** URL.  |
-| `CLOUDINARY_URL` | no       | `cloudinary://key:secret@cloud`. Photo upload is off when unset.   |
-| `PORT`           | no       | Port Express listens on. Render injects this automatically.        |
+| `DATABASE_URL`       | yes | PostgreSQL connection string. On Render use the **internal** URL.       |
+| `CLOUDINARY_URL`     | no  | `cloudinary://key:secret@cloud`. Photo upload is off when unset.        |
+| `JWT_SECRET`         | yes | Secret used to sign login tokens. Use a long random string.            |
+| `PRINCIPAL_EMAIL`    | yes | Email of the initial principal account, seeded on startup.             |
+| `PRINCIPAL_PASSWORD` | yes | Password for that initial principal.                                   |
+| `NODE_ENV`           | no  | Set to `production` on Render so the auth cookie is marked `Secure`.    |
+| `PORT`               | no  | Port Express listens on. Render injects this automatically.            |
 
 ---
 
@@ -180,6 +193,20 @@ Base path: `/api`
 
 `GET /api/meta` → `200` — the allowed courses / genders / years (shared with the
 server validators) plus whether photo upload is enabled.
+
+### Authentication
+
+- `POST /api/auth/login` — body `{ email, password }` → `200` with the user and a
+  `token` httpOnly cookie, or `401` on bad credentials.
+- `POST /api/auth/logout` → clears the cookie (login required).
+- `GET  /api/auth/me` → the current user, or `401`.
+
+All `/api/students` routes require a valid login cookie (`401` otherwise).
+
+### Staff management — PRINCIPAL only
+
+- `GET /api/users` · `POST /api/users` · `PATCH /api/users/:id/active` — list,
+  create, and (de)activate staff accounts. A logged-in ADMIN gets `403`.
 
 ### List students
 
@@ -255,11 +282,15 @@ database and a web service. Using the Render dashboard:
    service.
 2. `DATABASE_URL` is wired automatically from the database (internal connection
    string).
-3. Add `CLOUDINARY_URL` as an environment variable on the web service (marked
-   `sync: false`, so you set it in the dashboard).
+3. Set the `sync: false` env vars in the dashboard: `CLOUDINARY_URL`,
+   `PRINCIPAL_EMAIL`, and `PRINCIPAL_PASSWORD` (the initial principal account).
+   `JWT_SECRET` is generated automatically by Render, and `NODE_ENV=production`
+   is set by the blueprint.
 4. Deploy. The build runs `npm run build`; the start command runs
    `npm start`, which executes `prisma migrate deploy` before starting Express.
+   On startup the initial principal is seeded from the env vars.
 5. Health checks hit `GET /api/health`.
+6. Once live, sign in as the principal and create admin accounts from the app.
 
 To create the service manually instead of via the blueprint:
 
