@@ -60,6 +60,43 @@
   font-size: 0.8125rem;
 }
 
+.google-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+
+  &.hidden {
+    display: none;
+  }
+}
+
+.or-divider {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  color: var(--p-text-muted-color, #9ca3af);
+  font-size: 0.8rem;
+
+  &::before,
+  &::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--p-border-color, #e5e7eb);
+  }
+
+  span {
+    padding: 0 0.6rem;
+  }
+}
+
+.google-btn {
+  display: flex;
+  justify-content: center;
+  min-height: 40px;
+}
+
 :host ::ng-deep {
   .login-password,
   .login-password .p-password {

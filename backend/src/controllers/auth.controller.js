@@ -1,6 +1,7 @@
 import { prisma } from "../lib/prisma.js";
 import { verifyPassword } from "../lib/password.js";
 import { signToken } from "../lib/token.js";
+import { verifyGoogleToken } from "../lib/google.js";
 import { logAuthEvent } from "../services/authLog.js";
 import { HttpError } from "../middleware/errorHandler.js";
 
@@ -38,6 +39,43 @@ export async function login(req, res) {
   res.cookie(COOKIE_NAME, token, cookieOptions());
 
   await prisma.user.update({ where: { id: user.id }, data: { lastLoginAt: new Date() } });
+  await logAuthEvent(prisma, { userId: user.id, email: user.email, event: "LOGIN", req });
+
+  res.json(publicUser(user));
+}
+
+export async function googleLogin(req, res) {
+  const credential = req.body?.credential;
+  if (!credential) throw new HttpError(400, "Missing Google credential");
+  if (!process.env.GOOGLE_CLIENT_ID) throw new HttpError(503, "Google sign-in is not configured");
+
+  let payload;
+  try {
+    payload = await verifyGoogleToken(credential); // verifies signature + audience
+  } catch {
+    throw new HttpError(401, "Invalid Google token");
+  }
+
+  const email = String(payload.email ?? "").toLowerCase().trim();
+  if (!email || payload.email_verified !== true) {
+    throw new HttpError(401, "Google account email is not verified");
+  }
+
+  const user = await prisma.user.findUnique({ where: { email } });
+  // The gate: only a pre-provisioned, active staff account may sign in with Google.
+  if (!user || !user.isActive) {
+    await logAuthEvent(prisma, { userId: user?.id, email, event: "LOGIN_FAILED", req });
+    throw new HttpError(403, "This Google account is not authorized to sign in");
+  }
+
+  const token = signToken({ sub: user.id, role: user.role, email: user.email });
+  res.cookie(COOKIE_NAME, token, cookieOptions());
+
+  await prisma.user.update({
+    where: { id: user.id },
+    // Record the Google link on first use so we know which google account maps here.
+    data: { lastLoginAt: new Date(), ...(user.googleId ? {} : { googleId: payload.sub }) },
+  });
   await logAuthEvent(prisma, { userId: user.id, email: user.email, event: "LOGIN", req });
 
   res.json(publicUser(user));

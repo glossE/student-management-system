@@ -31,5 +31,10 @@
     </div>
 
     <p-button type="submit" label="Sign in" icon="pi pi-sign-in" [loading]="submitting()" styleClass="login-submit" />
+
+    <div class="google-section" [class.hidden]="!googleEnabled()">
+      <div class="or-divider"><span>or</span></div>
+      <div #googleBtn class="google-btn"></div>
+    </div>
   </form>
 </div>

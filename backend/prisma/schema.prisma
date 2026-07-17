@@ -58,6 +58,7 @@ model User {
   passwordHash String    @map("password_hash")
   role         Role
   isActive     Boolean   @default(true) @map("is_active")
+  googleId     String?   @unique @map("google_id")
   lastLoginAt  DateTime? @map("last_login_at")
   createdAt    DateTime  @default(now()) @map("created_at")
   updatedAt    DateTime  @updatedAt @map("updated_at")

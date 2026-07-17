@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { COURSES, GENDERS, YEARS } from "../validation/student.schema.js";
 import { isCloudinaryConfigured } from "../lib/cloudinary.js";
+import { isGoogleConfigured } from "../lib/google.js";
 
 export const metaRouter = Router();
 
@@ -16,5 +17,7 @@ metaRouter.get("/meta", (_req, res) => {
     genders: GENDERS,
     years: YEARS,
     photoUploadEnabled: isCloudinaryConfigured(),
+    googleAuthEnabled: isGoogleConfigured(),
+    googleClientId: process.env.GOOGLE_CLIENT_ID ?? null,
   });
 });

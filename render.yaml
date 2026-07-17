@@ -26,6 +26,9 @@ services:
         sync: false
       - key: PRINCIPAL_PASSWORD
         sync: false
+      # Google OAuth client id for "Sign in with Google" (public value; set in dashboard).
+      - key: GOOGLE_CLIENT_ID
+        sync: false
       # Marks auth cookies Secure (HTTPS-only) in production.
       - key: NODE_ENV
         value: production

@@ -21,6 +21,12 @@ export class AuthService {
       .pipe(tap((u) => this.set(u)));
   }
 
+  googleLogin(credential: string): Observable<AuthUser> {
+    return this.http
+      .post<AuthUser>('/api/auth/google', { credential })
+      .pipe(tap((u) => this.set(u)));
+  }
+
   logout(): Observable<unknown> {
     return this.http.post('/api/auth/logout', {}).pipe(tap(() => this.set(null)));
   }
